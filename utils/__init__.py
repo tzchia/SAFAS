@@ -5,8 +5,8 @@ import numpy as np
 from PIL import ImageFilter
 import random
 
-class AvgrageMeter(object):
 
+class AvgrageMeter(object):
     def __init__(self):
         self.reset()
 
@@ -38,6 +38,9 @@ def protocol_decoder(protocol):
     if protocol == "O_to_O":
         data_name_list_train = ["OULU"]
         data_name_list_test = ["OULU"]
+    if protocol == "A_to_A":
+        data_name_list_train = ["CELEBA_SPOOF"]
+        data_name_list_test = ["CELEBA_SPOOF"]
     elif protocol == "O_M_I_to_C":
         data_name_list_train = ["OULU", "MSU_MFSD", "Replay_attack"]
         data_name_list_test = ["CASIA_MFSD"]
@@ -55,15 +58,17 @@ def protocol_decoder(protocol):
         data_name_list_test = ["OULU"]
     return data_name_list_train, data_name_list_test
 
+
 import torch
 from torchvision.transforms.transforms import _setup_size
 
 
 class NineCrop(torch.nn.Module):
-
     def __init__(self, size):
         super().__init__()
-        self.size = _setup_size(size, error_msg="Please provide only two dimensions (h, w) for size.")
+        self.size = _setup_size(
+            size, error_msg="Please provide only two dimensions (h, w) for size."
+        )
 
     def forward(self, img):
         """
@@ -76,10 +81,9 @@ class NineCrop(torch.nn.Module):
         return self.nine_crop(img, self.size)
 
     def __repr__(self):
-        return self.__class__.__name__ + '(size={0})'.format(self.size)
+        return self.__class__.__name__ + "(size={0})".format(self.size)
 
-
-    def nine_crop(self, img, size) :
+    def nine_crop(self, img, size):
         import numbers
         from torchvision.transforms.functional import _get_image_size, crop, center_crop
 
@@ -103,11 +107,29 @@ class NineCrop(torch.nn.Module):
 
         ml = crop(img, (image_height - crop_height) // 2, 0, crop_height, crop_width)
         # mm = crop(img, (image_height - crop_height) // 2, (image_width - crop_width) // 2, crop_height, crop_width)
-        mr = crop(img, (image_height - crop_height) // 2, image_width - crop_width, crop_height, crop_width)
+        mr = crop(
+            img,
+            (image_height - crop_height) // 2,
+            image_width - crop_width,
+            crop_height,
+            crop_width,
+        )
 
         bl = crop(img, image_height - crop_height, 0, crop_height, crop_width)
-        bm = crop(img, image_height - crop_height, (image_width - crop_width) // 2, crop_height, crop_width)
-        br = crop(img, image_height - crop_height, image_width - crop_width, crop_height, crop_width)
+        bm = crop(
+            img,
+            image_height - crop_height,
+            (image_width - crop_width) // 2,
+            crop_height,
+            crop_width,
+        )
+        br = crop(
+            img,
+            image_height - crop_height,
+            image_width - crop_width,
+            crop_height,
+            crop_width,
+        )
 
         center = center_crop(img, [crop_height, crop_width])
 
@@ -117,7 +139,7 @@ class NineCrop(torch.nn.Module):
 class GaussianBlur(object):
     """Gaussian blur augmentation in SimCLR https://arxiv.org/abs/2002.05709"""
 
-    def __init__(self, sigma=[.1, 2.]):
+    def __init__(self, sigma=[0.1, 2.0]):
         self.sigma = sigma
 
     def __call__(self, x):
