@@ -1,0 +1,11 @@
+# To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
+# pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html # https://pytorch.org/get-started/previous-versions/
+# Could not find a version that satisfies the requirement torch>=1.0.0? # https://stackoverflow.com/questions/56239310/could-not-find-a-version-that-satisfies-the-requirement-torch-1-0-0
+opencv-python-headless # https://blog.csdn.net/Max_ZhangJF/article/details/108920050
+#torch == 1.8.1+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+#torchvision == 0.9.1+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+facenet-pytorch
+ffmpeg-python
+matplotlib #?
+scikit-learn
+pandas

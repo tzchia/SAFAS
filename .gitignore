@@ -4,4 +4,10 @@
 **.mp4
 **_BB.txt
 **.pyc
-**results*
+**.tar
+vimrc
+zshrc
+oh-my-zsh
+datasets/FAS
+.vscode
+results

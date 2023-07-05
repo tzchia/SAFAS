@@ -6,7 +6,6 @@ from matplotlib.patches import Rectangle
 from utils.rotate_crop import crop_rotated_rectangle, inside_rect, vis_rotcrop
 from ylib.scipy_misc import imread, imsave
 import torchvision.transforms.functional as tf
-import torch
 from facenet_pytorch import MTCNN, InceptionResnetV1
 
 os.environ["PATH"] += os.pathsep + "/usr/bin/ffprobe"
@@ -66,7 +65,8 @@ def preprocess_video(video_path, savepath, sample_ratio=5, max=1000):
             cropped_tsn = mtcnn.extract(frame, batch_boxes, None)
             if cropped_tsn is None:
                 continue
-            img_embedding = resnet(cropped_tsn.cuda().unsqueeze(0))
+            # img_embedding = resnet(cropped_tsn.cuda().unsqueeze(0))
+            img_embedding = resnet(cropped_tsn.unsqueeze(0))
 
             prob = batch_probs[0]
             box = batch_boxes[0].astype(int)
@@ -425,9 +425,9 @@ def generate_square_crop(rootpath, face_width=400):
 
 if __name__ == "__main__":
     """
-    oulu_info = run_oulu(rootpath="datasets/FAS/OULU-NPU/")
     msu_info = run_msu(rootpath="datasets/FAS/MSU-MFSD/")
     casia_info = run_casia(rootpath="datasets/FAS/CASIA_faceAntisp/")
     replay_info = run_replay(rootpath="datasets/FAS/Replay/")
+    oulu_info = run_oulu(rootpath="datasets/FAS/OULU-NPU/")
     """
-    celeba_info = run_celeba(rootpath="datasets/FAS/CELEBA-SPOOF/")
+    celeba_info = run_celeba(rootpath="datasets/FAS/CELEBA_SPOOF/")

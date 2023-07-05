@@ -459,7 +459,7 @@ def parse_args():
     parser.add_argument(
         "--protocol",
         type=str,
-        default="A_to_A",
+        default="O_to_A",
         help="O_C_I_to_M, O_M_I_to_C, O_C_M_to_I, I_C_M_to_O, O_to_O, A_to_A",
     )
     # training settings

@@ -38,6 +38,12 @@ def protocol_decoder(protocol):
     if protocol == "O_to_O":
         data_name_list_train = ["OULU"]
         data_name_list_test = ["OULU"]
+    if protocol == "A_to_O":
+        data_name_list_train = ["CELEBA_SPOOF"]
+        data_name_list_test = ["OULU"]
+    if protocol == "O_to_A":
+        data_name_list_train = ["OULU"]
+        data_name_list_test = ["CELEBA_SPOOF"]
     if protocol == "A_to_A":
         data_name_list_train = ["CELEBA_SPOOF"]
         data_name_list_test = ["CELEBA_SPOOF"]
