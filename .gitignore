@@ -8,6 +8,7 @@
 vimrc
 zshrc
 oh-my-zsh
+tmux.conf
 datasets/FAS
 .vscode
 results
