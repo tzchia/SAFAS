@@ -4,7 +4,7 @@
 **.mp4
 **_BB.txt
 **.pyc
-**.tar
+**.tar*
 vimrc
 zshrc
 oh-my-zsh
@@ -12,3 +12,4 @@ tmux.conf
 datasets/FAS
 .vscode
 results
+*.whl
