@@ -1,6 +1,5 @@
 import os, torch
 from utils import protocol_decoder
-import math
 
 
 class TwoCropTransform:

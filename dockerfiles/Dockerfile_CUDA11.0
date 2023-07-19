@@ -1,0 +1,38 @@
+FROM nvidia/cuda:11.0.3-base-ubuntu20.04
+WORKDIR /SA
+
+# copy session
+COPY requirements.txt .
+COPY vimrc /root/.vimrc
+COPY zshrc /root/.zshrc
+COPY oh-my-zsh /root/.oh-my-zsh
+COPY tmux.conf /root/.tmux.conf
+COPY torch-1.7.0+cu110-cp38-cp38-linux_x86_64.whl .
+
+# https://cynthiachuang.github.io/Change-Timezone-in-Dockerfile/
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+                
+RUN TZ=Asia/Taipei && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata 
+
+# install session
+RUN apt-get install -y vim zsh tmux tree python3.8 python3-pip ffmpeg libtinfo5 && \
+    apt-get update -y && \
+    rm /usr/bin/python3 && ln -s /usr/bin/python3.8 /usr/bin/python3 && \
+    python3 -m pip install --upgrade pip && \
+    pip install torch-1.7.0+cu110-cp38-cp38-linux_x86_64.whl && \
+    pip install torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html && \
+    python3 -m pip install -r requirements.txt && \
+    rm torch-1.7.0+cu110-cp38-cp38-linux_x86_64.whl 
+
+# set envs
+ENV LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so
+
+#docker build -f Dockerfile_CUDA11.0 . -t sa/tc:torch1.7_py3.8_cuda11.0
+#sudo docker run -it --rm -v ~/TC/SA:/SA --network=host --gpus all --shm-size 15G 2b5 zsh

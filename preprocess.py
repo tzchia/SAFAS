@@ -428,6 +428,6 @@ if __name__ == "__main__":
     msu_info = run_msu(rootpath="datasets/FAS/MSU-MFSD/")
     casia_info = run_casia(rootpath="datasets/FAS/CASIA_faceAntisp/")
     replay_info = run_replay(rootpath="datasets/FAS/Replay/")
-    oulu_info = run_oulu(rootpath="datasets/FAS/OULU-NPU/")
-    """
     celeba_info = run_celeba(rootpath="datasets/FAS/CELEBA_SPOOF/")
+    """
+    oulu_info = run_oulu(rootpath="datasets/FAS/OULU-NPU/")
