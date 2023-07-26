@@ -1,13 +1,13 @@
 import os, re, cv2, math, numpy as np
-
 import PIL.Image
 import torch
 from torch.utils.data import Dataset, DataLoader
 from glob import glob
 from utils.rotate_crop import crop_rotated_rectangle, inside_rect, vis_rotcrop
 import torchvision.transforms.functional as tf
-from ylib.scipy_misc import imread
 from .meta import DEVICE_INFOS
+
+# from ylib.scipy_misc import imread
 
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
@@ -175,7 +175,8 @@ class FaceDataset(Dataset):
                 break
 
         info = np.load(info_path, allow_pickle=True).item()
-        image = imread(image_path)
+        # image = imread(image_path)
+        image = cv2.imread(image_path)
 
         return image, info, image_id * 5
 

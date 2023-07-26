@@ -111,9 +111,10 @@ def main(args):
 
     test_transform = transforms.Compose(
         [
-            transforms.RandomResizedCrop(
-                256, scale=(args.test_scale, args.test_scale), ratio=(1.0, 1.0)
-            ),
+            # transforms.RandomResizedCrop(
+            #    256, scale=(args.test_scale, args.test_scale), ratio=(1.0, 1.0)
+            # ),
+            transforms.Resize([256, 256]),
             transforms.ToTensor(),
             normalizer,
         ]
@@ -161,7 +162,7 @@ def main(args):
 
     device2idx = {pattern: idx for idx, pattern in enumerate(spoof_cls_list)}
 
-    max_iter = args.num_epochs * len(train_loader)
+    # max_iter = args.num_epochs * len(train_loader)
     # make dirs
     model_root_path = os.path.join(args.result_path, args.result_name, "model")
     check_folder(model_root_path)
@@ -175,7 +176,7 @@ def main(args):
     if args.pretrain == "imagenet":
         model = get_model(
             args.model_type,
-            max_iter,
+            # max_iter,
             total_cls_num,
             pretrained=True,
             normed_fc=args.normfc,
@@ -185,7 +186,7 @@ def main(args):
     else:
         model = get_model(
             args.model_type,
-            max_iter,
+            # max_iter,
             total_cls_num,
             pretrained=False,
             normed_fc=args.normfc,
