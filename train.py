@@ -10,6 +10,10 @@ from loss import supcon_loss
 from datasets.supcon_dataset import FaceDataset, DEVICE_INFOS
 from datasets import get_datasets, TwoCropTransform
 
+from torch.utils.tensorboard import SummaryWriter
+
+writer = SummaryWriter()
+
 torch.backends.cudnn.benchmark = True
 
 
@@ -132,9 +136,11 @@ def main(args):
         transform=train_transform,
         debug_subset_size=args.debug_subset_size,
     )
+    print = train_set
     train_loader = DataLoader(
         train_set, batch_size=args.batch_size, shuffle=True, num_workers=4
     )
+    print = train_loader
 
     test_set = get_datasets(
         args.data_dir,
@@ -147,7 +153,7 @@ def main(args):
         debug_subset_size=args.debug_subset_size,
     )
     test_loader = DataLoader(
-        test_set[data_name_list_test[0]],
+        test_set,  # [data_name_list_test[0]],
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=4,
@@ -315,6 +321,10 @@ def main(args):
                 epoch + 1, lr, ce_loss_record_0.avg
             )
         )
+        writer.add_scalar("Loss/train", ce_loss_record_0.avg, epoch)
+        # writer.flush()
+        writer.close()
+
         scheduler.step()
 
         ############################ test ###########################
@@ -364,6 +374,10 @@ def main(args):
                     epoch + 1, test_ACC, HTER, auc_test, test_err, test_ACC, tpr
                 )
             )
+            writer.add_scalar("HTER/test", HTER, epoch)
+            writer.add_scalar("AUC/test", auc_test, epoch)
+            writer.add_scalar("ACC/test", test_ACC, epoch)
+            writer.close()
             print("test phase cost {:.4f}s".format(time.time() - start_time))
 
             if auc_test - HTER >= eva["best_auc"] - eva["best_HTER"]:
@@ -393,7 +407,6 @@ def main(args):
                     eva["best_epoch"], eva["best_HTER"], eva["best_auc"]
                 )
             )
-
             model_path = os.path.join(
                 model_root_path,
                 "{}_p{}_recent.pth".format(args.model_type, args.protocol),
@@ -460,7 +473,7 @@ def parse_args():
     parser.add_argument(
         "--protocol",
         type=str,
-        default="A_to_A",
+        default="A_O_to_A",
         help="O_C_I_to_M, O_M_I_to_C, O_C_M_to_I, I_C_M_to_O, O_to_O, A_to_A",
     )
     # training settings

@@ -37,7 +37,25 @@ def parse_args():
     return parser.parse_args()
 
 
-def inference(img, args):
+def loadModel(args):
+    model = get_model(
+        args.model_type,
+        max_iter=0,  # TODO
+        num_classes=2,
+        pretrained=True,
+        normed_fc=args.normfc,
+        use_bias=args.usebias,
+        simsiam=True if args.feat_loss == "simsiam" else False,
+    )
+    model_path = "results/0825/ResNet50_lgt_pA_H_O_S_to_A_O_S_best.pth"
+    ckpt = torch.load(model_path, map_location=torch.device("cpu"))
+    model.load_state_dict(ckpt["state_dict"])
+    model.to(device="cpu")
+    model.eval()
+    return model
+
+
+def inference(args, img, model):
     if args.pretrain == "imagenet":
         normalizer = transforms.Normalize(
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
@@ -55,27 +73,12 @@ def inference(img, args):
 
     image_x_view1 = torch.unsqueeze(test_transform(fromarray(img)), dim=0)
 
-    # load model
-    model = get_model(
-        args.model_type,
-        max_iter=0,  # TODO
-        num_classes=2,
-        pretrained=True,
-        normed_fc=args.normfc,
-        use_bias=args.usebias,
-        simsiam=True if args.feat_loss == "simsiam" else False,
-    )
-    model_path = "results/0718/A_S_to_O/ResNet50_lgt_pA_S_to_O_best.pth"
-    ckpt = torch.load(model_path, map_location=torch.device("cpu"))
-    model.load_state_dict(ckpt["state_dict"])
-    # model = torch.load(model_path, map_location=torch.device("cpu"))
-    model.eval()
     with torch.no_grad():
         _, penul_feat, logit = model(image_x_view1, out_type="all", scale=1)
     return logit
 
 
-def webcam(args):
+def webcam(args, model):
     frameWidth = 640
     frameHeight = 480
     cap = cv2.VideoCapture(0)
@@ -110,14 +113,15 @@ def webcam(args):
         cropped = frame[box[1] : box[3], box[0] : box[2]]
 
         try:
-            logit = inference(cropped, args)
+            logit = inference(args, cropped, model)
+            #        logit = torch.tensor([[1]]).cuda() #inference(cropped, args)
 
             # draw the label and bounding box on the frame
-            if logit > 0.5:
+            if logit > 0.2:
                 label, color = "live", (0, 255, 0)
             else:
                 label, color = "spoof", (0, 0, 255)
-            tag = f"{label}: {logit.numpy()[0][0]:.4f}"
+            tag = f"{label}: {logit.cpu().numpy()[0][0]:.4f}"  # TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first
 
             cv2.putText(
                 frame1,
@@ -142,4 +146,5 @@ def webcam(args):
 
 if __name__ == "__main__":
     args = parse_args()
-    webcam(args=args)
+    model = loadModel(args=args)
+    webcam(args, model)

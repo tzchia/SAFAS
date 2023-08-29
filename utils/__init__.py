@@ -32,21 +32,27 @@ def protocol_decoder(protocol):
     if protocol == "O_C_I_to_M":
         data_name_list_train = ["OULU", "CASIA_MFSD", "Replay_attack"]
         data_name_list_test = ["MSU_MFSD"]
-    if protocol == "O_C_to_M":
+    elif protocol == "O_C_to_M":
         data_name_list_train = ["OULU", "CASIA_MFSD"]
         data_name_list_test = ["MSU_MFSD"]
-    if protocol == "O_to_O":
+    elif protocol == "O_to_O":
         data_name_list_train = ["OULU"]
         data_name_list_test = ["OULU"]
-    if protocol == "A_to_O":
+    elif protocol == "A_to_O":
         data_name_list_train = ["CELEBA_SPOOF"]
         data_name_list_test = ["OULU"]
-    if protocol == "O_to_A":
+    elif protocol == "O_to_A":
         data_name_list_train = ["OULU"]
         data_name_list_test = ["CELEBA_SPOOF"]
-    if protocol == "A_to_A":
+    elif protocol == "A_to_A":
         data_name_list_train = ["CELEBA_SPOOF"]
         data_name_list_test = ["CELEBA_SPOOF"]
+    elif protocol == "A_O_to_A":
+        data_name_list_train = ["CELEBA_SPOOF", "OULU"]
+        data_name_list_test = ["CELEBA_SPOOF"]
+    elif protocol == "A_O_to_A_O":
+        data_name_list_train = ["CELEBA_SPOOF", "OULU"]
+        data_name_list_test = ["CELEBA_SPOOF", "OULU"]
     elif protocol == "O_M_I_to_C":
         data_name_list_train = ["OULU", "MSU_MFSD", "Replay_attack"]
         data_name_list_test = ["CASIA_MFSD"]

@@ -77,7 +77,7 @@ def get_single_dataset(
             data_set = FaceDataset(
                 data_name,
                 os.path.join(data_dir, "OULU-NPU/preprocess"),
-                split="test",
+                split="train",
                 label=label,
                 transform=transform,
                 map_size=map_size,
@@ -170,6 +170,7 @@ def get_datasets(
             data_set_sum += data_tmp
             sum_n += len(data_tmp)
     else:
+        """
         data_set_sum = {}
         for i in range(len(data_name_list_test)):
             data_tmp = get_single_dataset(
@@ -185,5 +186,39 @@ def get_datasets(
             )
             data_set_sum[data_name_list_test[i]] = data_tmp
             sum_n += len(data_tmp)
-    print("Total number: {}".format(sum_n))
+        """
+        data_set_sum = get_single_dataset(
+            data_dir,
+            FaceDataset,
+            data_name=data_name_list_test[0],
+            train=False,
+            img_size=img_size,
+            map_size=map_size,
+            transform=transform,
+            debug_subset_size=debug_subset_size,
+            UUID=0,
+        )
+        sum_n = len(data_set_sum)
+        for i in range(1, len(data_name_list_test)):
+            data_tmp = get_single_dataset(
+                data_dir,
+                FaceDataset,
+                data_name=data_name_list_test[i],
+                train=False,
+                img_size=img_size,
+                map_size=map_size,
+                transform=transform,
+                debug_subset_size=debug_subset_size,
+                UUID=i,
+            )
+            data_set_sum += data_tmp
+            sum_n += len(data_tmp)
+
+    sum_spoof, sum_live = 0, 0
+    for i in range(sum_n):
+        if data_set_sum[i]["label"] == 0:
+            sum_spoof += 1
+        else:
+            sum_live += 1
+    print(f"# of live, spoof, Total: {sum_live}\t{sum_spoof}\t{sum_n}")
     return data_set_sum
