@@ -1,5 +1,5 @@
 import os, torch
-from utils import protocol_decoder
+from utils import protocol_decoder, logger
 
 
 class TwoCropTransform:
@@ -214,11 +214,23 @@ def get_datasets(
             data_set_sum += data_tmp
             sum_n += len(data_tmp)
 
-    sum_spoof, sum_live = 0, 0
-    for i in range(sum_n):
-        if data_set_sum[i]["label"] == 0:
-            sum_spoof += 1
-        else:
-            sum_live += 1
-    print(f"# of live, spoof, Total: {sum_live}\t{sum_spoof}\t{sum_n}")
+    for i in range(10):
+        data_set_sum += data_set_sum
+
+    # import numba
+    # @numba.jit(nopython=False)
+    def boo():
+        sum_spoof, sum_live = 0, 0
+        for DSS in data_set_sum:
+            if DSS["label"] == 0:
+                sum_spoof += 1
+            else:
+                sum_live += 1
+        return sum_spoof, sum_live
+
+    sum_spoof, sum_live = boo()
+
+    logger.logger.info(
+        f"# of live, spoof, Total: {sum_live}\t{sum_spoof}\t{len(data_set_sum)}"
+    )
     return data_set_sum

@@ -11,7 +11,7 @@ COPY dockerfiles/tmux.conf /root/.tmux.conf
 COPY dockerfiles/torch-1.10.1+cu111-cp38-cp38-linux_x86_64.whl .
 ENV DEBIAN_FRONTEND noninteractive #https://stackoverflow.com/questions/59692797/how-to-fill-user-input-for-interactive-command-for-run-command
 RUN apt-get update -y && \
-    apt-get install -y vim zsh tmux tree python3.8 python3-pip && \
+    apt-get install -y vim zsh tmux tree htop python3.8 python3-pip && \
     apt-get update -y && \
     rm /usr/bin/python3 && ln -s /usr/bin/python3.8 /usr/bin/python3 && \
     python3 -m pip install --upgrade pip && \

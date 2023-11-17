@@ -473,7 +473,7 @@ def parse_args():
     parser.add_argument(
         "--protocol",
         type=str,
-        default="A_O_to_A",
+        default="A_to_A",
         help="O_C_I_to_M, O_M_I_to_C, O_C_M_to_I, I_C_M_to_O, O_to_O, A_to_A",
     )
     # training settings
@@ -509,7 +509,7 @@ def parse_args():
     )
     parser.add_argument("--start_epoch", type=int, default=0, help="start epoch")
     parser.add_argument(
-        "--num_epochs", type=int, default=100, help="total training epochs"
+        "--num_epochs", type=int, default=3, help="total training epochs"
     )
     parser.add_argument("--print_freq", type=int, default=3, help="print frequency")
     parser.add_argument("--resume", type=bool, default=False, help="print frequency")

@@ -74,25 +74,22 @@ def inference(args, img, model):
     image_x_view1 = torch.unsqueeze(test_transform(fromarray(img)), dim=0)
 
     with torch.no_grad():
-        #_, penul_feat, logit = model(image_x_view1, out_type="all", scale=1)
         penul_feat, logit = model(image_x_view1, out_type="ce", scale=1)
-        #logit0, logit1, logit = model(image_x_view1, out_type="ce_sep", scale=1)
-        # print(penul_feat)
     return logit
 
 
 def webcam(args, model):
-    frameWidth = 640
-    frameHeight = 480
-    cap = cv2.VideoCapture(0)
-    cap.set(3, frameWidth)
-    cap.set(4, frameHeight)
-    cap.set(10, 150)
+    #cap = cv2.VideoCapture('/Users/tc/Downloads/face/20231102_140027.mp4')
+    cap = cv2.VideoCapture('/Users/tc/Downloads/face/tc2_toilet.mov')
+    #cap = cv2.VideoCapture('/Users/tc/Downloads/face/20231102_140128.mp4')
 
     # face detector
     mtcnn = MTCNN(select_largest=False, device="cpu", image_size=224, margin=0)
-    #resnet = InceptionResnetV1(pretrained="vggface2").eval()
-    #detector = RetinaFace() #(gpu_id=0)
+
+    # cv2.VideoWriter ans2: "macOS High Sierra 10.13.4, Python 3.6.5, OpenCV 3.4.1.": https://stackoverflow.com/questions/10605163/opencv-videowriter-under-osx-producing-no-output
+    frame_width = int(cap.get(3))
+    frame_height = int(cap.get(4))
+    out = cv2.VideoWriter('/Users/tc/Downloads/face/viz/2out.avi', cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 
     while True:
         (
@@ -111,25 +108,19 @@ def webcam(args, model):
 
         # Detect face
         batch_boxes, batch_probs, batch_points = mtcnn.detect(frame, landmarks=True)
-        #faces = detector(frame, cv=False)
-        #for face in faces:
-        #    batch_boxes, landmarks, score = face
-        #    if batch_boxes is None:
+        print(batch_boxes.shape)
         for batch_box in batch_boxes:
             if batch_box is None:
                 continue
 
-            #box = batch_boxes[0].astype(int)
-            #box = batch_boxes.astype(int)
             box = batch_box.astype(int)
             cropped = frame[box[1] : box[3], box[0] : box[2]]
 
             try:
                 logit = inference(args, cropped, model)
-                #        logit = torch.tensor([[1]]).cuda() #inference(cropped, args)
 
                 # draw the label and bounding box on the frame
-                if logit > 0.45:
+                if logit > 0.55:
                     label, color = "live", (0, 255, 0)
                 else:
                     label, color = "spoof", (0, 0, 255)
@@ -147,13 +138,20 @@ def webcam(args, model):
                 cv2.rectangle(
                     frame1, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), color, 2
                 )
+                out.write(frame1)
                 cv2.imshow("Result", frame1)
 
             except:
+                out.write(frame2)
                 cv2.imshow("Result", frame2)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
+
+    # Release everything if job is finished
+    cap.release()
+    out.release() 
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
